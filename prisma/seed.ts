@@ -40,6 +40,22 @@ async function seed() {
     },
   });
 
+  const labs = [
+    {
+      title: "1. Architecture",
+      urlSegment: "01-architecture",
+      content: "nothing there yet",
+    },
+  ];
+
+  for (const lab of labs) {
+    await prisma.lab.upsert({
+      where: { urlSegment: lab.urlSegment },
+      update: lab,
+      create: lab,
+    });
+  }
+
   console.log(`Database has been seeded. 🌱`);
 }
 
