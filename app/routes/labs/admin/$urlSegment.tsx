@@ -7,19 +7,29 @@ import {
 import { Form, useLoaderData } from "@remix-run/react";
 import React, { useState } from "react";
 import { assertDefined } from "~/assert-defined";
-import { getLabByUrlSegment, Lab, saveLab } from "~/models/lab.server";
+import { addLab, getLabByUrlSegment, Lab, saveLab } from "~/models/lab.server";
 
 const inputClassName = `w-full rounded border border-gray-500 px-2 py-1 text-lg`;
 
 interface LoaderData {
-  lab: Lab;
+  lab: Partial<Lab>;
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
-  assertDefined(params.urlSegment);
-  const lab = await getLabByUrlSegment(params.urlSegment);
-  assertDefined(lab);
-  return json({ lab });
+  if (params.urlSegment !== "new") {
+    assertDefined(params.urlSegment);
+    const lab = await getLabByUrlSegment(params.urlSegment);
+    assertDefined(lab);
+    return json({ lab });
+  } else {
+    const lab: Partial<Lab> = {
+      id: "",
+      content: "",
+      title: "",
+      urlSegment: "",
+    };
+    return json({ lab });
+  }
 };
 
 function assertString(
@@ -35,11 +45,17 @@ export const action: ActionFunction = async ({ request }) => {
   const title = formData.get("title");
   const urlSegment = formData.get("urlSegment");
   const content = formData.get("content");
+  const id = formData.get("id");
 
   assertString(title);
   assertString(urlSegment);
   assertString(content);
-  await saveLab({ title, urlSegment, content });
+
+  if (id === "") {
+    await addLab({ title, urlSegment, content });
+  } else {
+    await saveLab({ id, title, urlSegment, content });
+  }
 
   return redirect("/labs");
 };
@@ -50,6 +66,7 @@ export default function EditLab() {
 
   return (
     <Form method="post">
+      <input type="hidden" name="id" value={lab.id} />
       <p>
         <label>
           Title:{" "}

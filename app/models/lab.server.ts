@@ -15,9 +15,13 @@ export async function getLabByUrlSegment(urlSegment: string) {
   return prisma.lab.findUnique({ where: { urlSegment } });
 }
 
-export async function saveLab(lab: Omit<Lab, "id">) {
+export async function saveLab(lab: Lab) {
   return prisma.lab.update({
     data: lab,
-    where: { urlSegment: lab.urlSegment },
+    where: { id: lab.id },
   });
+}
+
+export async function addLab(lab: Omit<Lab, "id">) {
+  return prisma.lab.create({ data: lab });
 }

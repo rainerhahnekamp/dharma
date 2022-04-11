@@ -18,6 +18,9 @@ export default function Index() {
   return (
     <main>
       <h1>Labs</h1>
+      <Link to="/labs/admin/new" className="text-blue-600 underline">
+        Add New Lab
+      </Link>
       <ul>
         {labs.map((lab) => (
           <li key={lab.urlSegment}>

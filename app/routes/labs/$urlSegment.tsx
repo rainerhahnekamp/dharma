@@ -20,7 +20,7 @@ export default function LabUrlSegment() {
     <main className="mx-auto max-w-4xl">
       <h1 className="my-6 border-b-2 text-center text-3xl">{lab.title}</h1>
       <Link
-        to={"../labs/edit/" + lab.urlSegment}
+        to={"../labs/admin/" + lab.urlSegment}
         className="text-blue-600 underline"
       >
         Edit
