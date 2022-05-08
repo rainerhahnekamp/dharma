@@ -17,7 +17,6 @@ export default function Index() {
   const { labs } = useLoaderData() as LoaderData;
   return (
     <main>
-      <h1>Labs</h1>
       <Link to="/labs/admin/new" className="text-blue-600 underline">
         Add New Lab
       </Link>
