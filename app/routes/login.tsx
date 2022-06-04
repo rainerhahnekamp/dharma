@@ -5,6 +5,9 @@ import type {
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { Button } from "primereact/button";
+import { Checkbox } from "primereact/checkbox";
+import { InputText } from "primereact/inputtext";
 import * as React from "react";
 
 import { createUserSession, getUserId } from "~/session.server";
@@ -65,7 +68,7 @@ export const action: ActionFunction = async ({ request }) => {
     request,
     userId: user.id,
     remember: remember === "on" ? true : false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/notes",
+    redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
   });
 };
 
@@ -75,116 +78,74 @@ export const meta: MetaFunction = () => {
   };
 };
 
+export function CatchBoundary() {
+  return <p>Sorry, there was a problem with the login.</p>;
+}
+
+export function ErrorBoundary() {
+  return <p>Sorry, there was a problem with the login.</p>;
+}
+
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/notes";
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    }
-  }, [actionData]);
+  const redirectTo = searchParams.get("redirectTo") || "/";
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
-      <div className="mx-auto w-full max-w-md px-8">
-        <Form method="post" className="space-y-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email address
-            </label>
-            <div className="mt-1">
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                autoFocus={true}
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.email && (
-                <div className="pt-1 text-red-700" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <div className="mt-1">
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.password && (
-                <div className="pt-1 text-red-700" id="password-error">
-                  {actionData.errors.password}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+    <Form method="post">
+      <div className="mx-auto flex max-w-xs flex-col space-y-6">
+        <div className="field">
+          <label htmlFor="email" className="block">
+            EMail
+          </label>
+          <InputText
+            id="email"
+            className="block w-full"
+            name="email"
+            autoComplete="email"
+            autoFocus={true}
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="password" className="block">
+            Password
+          </label>
+          <InputText
+            id="password"
+            type="password"
+            className="block w-full"
+            name="password"
+            autoComplete="currentPassword"
+          />
+        </div>
+        <input type="hidden" name="redirectTo" value={redirectTo} />
+        <div className="field-checkbox">
+          <input
+            type="checkbox"
+            name="remember"
+            id="remember"
+            className="p-checkbox"
+          />
+          <label htmlFor="remember" className="pl-1">
+            Remember me
+          </label>
+        </div>
+        <div className="flex justify-center">
+          <Button type="submit">Log in</Button>
+        </div>
+        <hr />
+        <p>Don't have an account? </p>
+        <p>
+          <Link
+            className="link"
+            to={{
+              pathname: "/join",
+              search: searchParams.toString(),
+            }}
           >
-            Log in
-          </button>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
-            </div>
-            <div className="text-center text-sm text-gray-500">
-              Don't have an account?{" "}
-              <Link
-                className="text-blue-500 underline"
-                to={{
-                  pathname: "/join",
-                  search: searchParams.toString(),
-                }}
-              >
-                Sign up
-              </Link>
-            </div>
-          </div>
-        </Form>
+            Sign up
+          </Link>
+        </p>
       </div>
-    </div>
+    </Form>
   );
 }

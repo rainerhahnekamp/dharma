@@ -37,9 +37,25 @@ model Note {
   userId String
 }
 
+model Workshop {
+  id String @id @default(cuid())
+  title String
+  body String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  labs Lab[]
+}
+
 model Lab {
   id String @id @default(cuid())
   title String
-  urlSegment String @unique
   content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workshop Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+  workshopId String
 }
