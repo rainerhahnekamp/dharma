@@ -1,9 +1,18 @@
-import { LinksFunction } from "@remix-run/node";
+import { json, LinksFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { Button } from "primereact/button";
+import { loadWorkshops } from "~/models/workshop.server";
+import stylesUrls from "~/styles/index.css";
 
 import { useOptionalUser } from "~/utils";
-import stylesUrls from "~/styles/index.css";
+
+interface LoaderData {
+  workshopCount: number;
+}
+
+export const loader = async () => {
+  const workshops = await loadWorkshops();
+  return json<LoaderData>({ workshopCount: workshops.length });
+};
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: stylesUrls }];
@@ -11,6 +20,7 @@ export const links: LinksFunction = () => {
 
 export default function Index() {
   const user = useOptionalUser();
+  const { workshopCount } = useLoaderData<LoaderData>();
 
   return (
     <div>
